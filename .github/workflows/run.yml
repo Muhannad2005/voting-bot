@@ -18,7 +18,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install curl_cffi
+        run: pip install curl_cffi typing_extensions
 
       - name: Run Python Script
         run: python main.py
