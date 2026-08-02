@@ -10,7 +10,7 @@ VOTE_URL = "https://codemap-25.taqat.academy/api/public/showcase/cmqw94mpa0003jb
 PROJECT_ID = "cmp8byr1j0004jm04a7i79hc3"
 
 def print_log(msg):
-    """طباعة فورية تظهر مباشرة في سجلات Render/Terminal"""
+    """طباعة فورية تظهر مباشرة في سجلات Render/Terminal/GitHub"""
     print(msg, flush=True)
 
 def get_free_proxies():
@@ -96,30 +96,42 @@ def simulate_and_vote(project_id, proxy_address):
         return False
 
 if __name__ == "__main__":
-    proxy_list = get_free_proxies()
-    if not proxy_list:
-        print_log("[-] لا توجد بروكسيات للبدء. إغلاق السكربت.")
-        sys.exit(1)
-
     TOTAL_VOTES_NEEDED = 10000  # الهدف
     successful_votes = 0
-    proxy_index = 0
 
     print_log(f"🚀 بدء التشغيل الفوري للسكربت المطور للمشروع: {PROJECT_ID}...")
+    print_log(f"🎯 الهدف الإجمالي: {TOTAL_VOTES_NEEDED} صوت")
 
-    while successful_votes < TOTAL_VOTES_NEEDED and proxy_index < len(proxy_list):
-        current_proxy = proxy_list[proxy_index]
-        proxy_index += 1
+    # الحلقة اللانهائية التي تستمر حتى تحقيق الهدف
+    while successful_votes < TOTAL_VOTES_NEEDED:
+        proxy_list = get_free_proxies()
         
-        print_log(f"\n--- [ محاولة رقم {successful_votes + 1} | البروكسي {proxy_index}/{len(proxy_list)} ] ---")
-        success = simulate_and_vote(PROJECT_ID, current_proxy)
+        if not proxy_list:
+            print_log("[-] لم يتم العثور على بروكسيات، سنحاول مجدداً بعد 10 ثوانٍ...")
+            time.sleep(10)
+            continue
+            
+        proxy_index = 0
         
-        if success:
-            successful_votes += 1
-            sleep_time = random.uniform(4, 8)
-            print_log(f"[*] صوت ناجح! انتظار {sleep_time:.2f} ثوانٍ للتمويه...")
-            time.sleep(sleep_time)
-        else:
-            print_log("[*] البروكسي غير صالح أو فشل الطلب، الانتقال للتالي...")
+        # حلقة المرور على قائمة البروكسيات الحالية
+        while successful_votes < TOTAL_VOTES_NEEDED and proxy_index < len(proxy_list):
+            current_proxy = proxy_list[proxy_index]
+            proxy_index += 1
+            
+            print_log(f"\n--- [ الإنجاز: {successful_votes}/{TOTAL_VOTES_NEEDED} | البروكسي {proxy_index}/{len(proxy_list)} ] ---")
+            success = simulate_and_vote(PROJECT_ID, current_proxy)
+            
+            if success:
+                successful_votes += 1
+                sleep_time = random.uniform(4, 8)
+                print_log(f"[*] صوت ناجح! انتظار {sleep_time:.2f} ثوانٍ للتمويه...")
+                time.sleep(sleep_time)
+            else:
+                print_log("[*] البروكسي غير صالح أو فشل الطلب، الانتقال للتالي...")
 
-    print_log(f"\n🎉 انتهت العملية! إجمالي الأصوات الناجحة: {successful_votes}")
+        # إذا انتهت القائمة ولم نصل للهدف بعد، ننتظر قليلاً قبل جلب قائمة جديدة
+        if successful_votes < TOTAL_VOTES_NEEDED:
+            print_log("\n[-] انتهت قائمة البروكسيات الحالية. انتظار 15 ثانية لجلب قائمة جديدة وتكملة التصويت...")
+            time.sleep(15)
+
+    print_log(f"\n🎉 تم إنجاز المهمة بنجاح! إجمالي الأصوات الناجحة: {successful_votes}/{TOTAL_VOTES_NEEDED}")
